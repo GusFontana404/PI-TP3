@@ -1,6 +1,8 @@
 # --- Función para contar el número de los dados --------------------------------------------------------------------------
 def contar_huecos(imagen):
-
+  """Detecta la cantidad de contornos internos en los dados y 
+  devuelve el valor representado en su cara superior."""
+  
   #Encontrar contornos internos
   contornos, jerarquia = cv2.findContours(imagen, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE);
 
@@ -12,6 +14,9 @@ def contar_huecos(imagen):
 
 # --- Función para procesar los frames y obtener los dados -----------------------------------------------------------------
 def encontrar_dados(frame):
+    """Recibe un video de tirada de dados y los procesa 
+    obteniendo los dados semgentados sobre el fondo."""
+    
     #Convertir la imagen de BGR a HSV
     img_hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -55,6 +60,11 @@ def encontrar_dados(frame):
 
 # --- Funcion para leer un video y generar la detección de dados -------------------------------------------------------------
 def video_segmentado(video):
+    """Detecta el fondo estático del video. Además, realiza la detección
+    de dados y cuenta los valores que representan cada uno de ellos, el 
+    resultado se refleja en el video mostrado en pantalla. Se devuelva un 
+    video grabado con la segmentación incluidad en el."""
+  
     cap = cv2.VideoCapture(video)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))  
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
