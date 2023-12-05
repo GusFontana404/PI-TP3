@@ -118,7 +118,7 @@ def video_segmentado(video):
             out.write(copia_frame)
             
             #Mostrar el cuadro original y la máscara de primer plano
-            cv2.imshow('Frame Original', frame_original)
+            #cv2.imshow('Frame Original', frame_original)
             #cv2.imshow('Mascara Binaria', binary_mask)
 
             #Mostrar el video segmentado
