@@ -4,7 +4,7 @@ def contar_huecos(imagen):
   devuelve el valor representado en su cara superior."""
   
   #Encontrar contornos internos
-  contornos, jerarquia = cv2.findContours(imagen, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE);
+  _, jerarquia = cv2.findContours(imagen, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE);
 
   #Contar los contornos encontrados
   contornos_internos = sum(1 for h in jerarquia[0] if h[3] != -1)
@@ -44,7 +44,7 @@ def encontrar_dados(frame):
     img_gray = cv2.cvtColor(img_segmentada, cv2.COLOR_BGR2GRAY)
 
     #Binarizar la imagen
-    th, binary_img = cv2.threshold(img_gray, 28, 1, cv2.THRESH_BINARY) 
+    _, binary_img = cv2.threshold(img_gray, 28, 1, cv2.THRESH_BINARY) 
 
     #Morfología para mejorar la segmentación obtenida
     morf_ap = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (1, 2)) 
@@ -56,7 +56,7 @@ def encontrar_dados(frame):
     #Clausura para rellenar huecos.
     clausura_img = cv2.morphologyEx(imagen_apertura, cv2.MORPH_CLOSE, morf_cl)
     
-    return clausura_img
+    return clausura_img, img_segmentada
 
 # --- Funcion para leer un video y generar la detección de dados -------------------------------------------------------------
 def video_segmentado(video):
@@ -83,26 +83,27 @@ def video_segmentado(video):
             gray_frame = cv2.cvtColor(frame_original, cv2.COLOR_BGR2GRAY)
             
             #Aplicar umbral al frame
-            _, binary_mask = cv2.threshold(gray_frame, 75, 255, cv2.THRESH_BINARY)
+            _, binary_frame = cv2.threshold(gray_frame, 75, 255, cv2.THRESH_BINARY)
 
             #Contar píxeles blancos
-            píxeles_blancos = cv2.countNonZero(binary_mask)
+            píxeles_blancos = cv2.countNonZero(binary_frame)
 
             #Contar píxeles negros (total de píxeles - píxeles blancos)
-            total_píxeles = binary_mask.size
+            total_píxeles = binary_frame.size
             píxeles_negros = total_píxeles - píxeles_blancos
 
             #Resultados de la segmentación de la función
-            #frame_procesado = encontrar_dados(frame_original) * 255
+            #frame_HSV = encontrar_dados(frame_original)[1] # --> Se obtiene img solo con rojo
+            #frame_procesado = encontrar_dados(frame_original)[0] * 255
             #out.write(cv2.cvtColor(frame_procesado, cv2.COLOR_GRAY2BGR))
 
             #Detecta cambio de intensidad con respecto a una 'imagen estática'
             if píxeles_negros > 9500 and píxeles_negros < 14600:
                 copia_frame = frame_original.copy()
-                dados_staticos = encontrar_dados(copia_frame)
+                dados_staticos = encontrar_dados(copia_frame)[0]
 
                 #Buscar componentes conectadas
-                num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(dados_staticos)
+                _, _, stats, _ = cv2.connectedComponentsWithStats(dados_staticos)
 
                 #Itera sobra las stats y filtra áreas (detectadas experimentalmente)
                 for st in stats:
@@ -128,14 +129,15 @@ def video_segmentado(video):
             out.write(copia_frame)
             
             #Mostrar el cuadro original y la máscara de primer plano
-            #cv2.imshow('Frame Original', frame_original)
-            #cv2.imshow('Mascara Binaria', binary_mask)
+            cv2.imshow('Frame Original', frame_original)
+            #cv2.imshow('Frames Binarios', binary_frame)
 
             #Mostrar el video segmentado
-            #cv2.imshow('Frame Procesado', frame_procesado)
+            #cv2.imshow('Frame Procesado', frame_procesado) # --> Img binarizada y con morfología
+            #cv2.imshow('Frame HSV', frame_HSV) # --> Img segmentada en el color rojo (HSV) 
 
             #Mostar el video con la detección de dados
-            cv2.imshow('Deteccion Dados', copia_frame)
+            cv2.imshow('Deteccion dados', copia_frame)
 
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
