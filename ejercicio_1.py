@@ -29,7 +29,7 @@ def encontrar_dados(frame):
 
     #Definir otro rango de colores rojos en HSV 
     rango_bajo = np.array([90, 75, 75])  
-    rango_alto = np.array([180, 255, 255]) 
+    rango_alto = np.array([179, 255, 255]) 
 
     #Crear otra máscara utilizando inRange para la segmentación
     mascara2 = cv2.inRange(img_hsv, rango_bajo, rango_alto)
