@@ -139,6 +139,10 @@ def video_segmentado(video):
             #Mostar el video con la detección de dados
             cv2.imshow('Deteccion dados', copia_frame)
 
+            #Agrego una pausa para ver mejor los nros de los dados
+            if keyboard.is_pressed('p'):
+                cv2.waitKey(0)
+          
             if cv2.waitKey(25) & 0xFF == ord('q'):
                 break
         else:
