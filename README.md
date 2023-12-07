@@ -22,6 +22,6 @@ La ejecución de está función devuelve un video grabado con la segmentación i
 
 ## Indicaciones
 Para ejecutar el código, debe asegurarse que cuenta con `Python` instalado y con las siguientes librerías en el entorno de trabajo: 
-- matplotlib.pyplot 
+- keyboard
 - numpy
 - cv2 
